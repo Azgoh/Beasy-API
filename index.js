@@ -3,6 +3,9 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import bodyParser from "body-parser";
+import swaggerUi from 'swagger-ui-express';
+import { readFileSync } from 'fs';
+const swaggerDocument = JSON.parse(readFileSync('./docs/swagger.json', 'utf8'));
 
 // Import route files
 import userRoutes from "./src/routes/UserRoutes.js";
@@ -32,6 +35,9 @@ app.use("/api/professionals", professionalRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/availability", availabilityRoutes);
 app.use("/api/appointments", appointmentRoutes);
+
+// Add before routes
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Start server
 const PORT = process.env.PORT || 8080;

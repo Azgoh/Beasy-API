@@ -1,0 +1,1312 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "ExpressBackend API",
+    "version": "1.0.0",
+    "description": "Express + Sequelize backend API with JWT authentication, email verification, and professional booking system",
+    "contact": {
+      "name": "API Support"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Development server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Authentication",
+      "description": "User registration, login, and verification"
+    },
+    {
+      "name": "Users",
+      "description": "User management"
+    },
+    {
+      "name": "Professionals",
+      "description": "Professional profiles"
+    },
+    {
+      "name": "Appointments",
+      "description": "Appointment booking and management"
+    },
+    {
+      "name": "Availability",
+      "description": "Professional and user availability slots"
+    },
+    {
+      "name": "Reviews",
+      "description": "Professional reviews"
+    }
+  ],
+  "paths": {
+    "/api/register": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Register a new user",
+        "description": "Creates a new user account and sends verification email",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["username", "email", "password"],
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "example": "john_doe"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "john@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "password123"
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": ["USER", "PROFESSIONAL"],
+                    "default": "USER"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "User registered successfully. Please verify your email."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - validation error"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/verify-email": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Verify user email",
+        "description": "Verify user email with token and redirect to frontend",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Verification token from email"
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirect to frontend with status"
+          },
+          "400": {
+            "description": "Invalid or expired token"
+          }
+        }
+      }
+    },
+    "/api/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "User login",
+        "description": "Authenticate user and return JWT token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "john@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "password123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/UserDTO"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        }
+      }
+    },
+    "/api/users": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get all users",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserDTO"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get user by ID",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDTO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/api/users/me": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get authenticated user by JWT",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDTO"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/users/deleteAll": {
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Delete all users",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All users deleted"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/me": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get current authenticated user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDTO"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/professionals/register": {
+      "post": {
+        "tags": ["Professionals"],
+        "summary": "Register professional profile",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["firstName", "lastName", "profession", "location", "hourlyRate"],
+                "properties": {
+                  "firstName": {
+                    "type": "string",
+                    "example": "Alice"
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "example": "Miller"
+                  },
+                  "profession": {
+                    "type": "string",
+                    "example": "Plumber"
+                  },
+                  "location": {
+                    "type": "string",
+                    "example": "New York"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Experienced plumber"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "example": "1234567890"
+                  },
+                  "hourlyRate": {
+                    "type": "string",
+                    "example": "50"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Professional profile created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfessionalDTO"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/professionals/me": {
+      "get": {
+        "tags": ["Professionals"],
+        "summary": "Get authenticated user's professional profile",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Professional profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfessionalDTO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Profile not found"
+          }
+        }
+      }
+    },
+    "/api/professionals/{id}": {
+      "get": {
+        "tags": ["Professionals"],
+        "summary": "Get professional by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Professional details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfessionalDTO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Professional not found"
+          }
+        }
+      }
+    },
+    "/api/professionals": {
+      "get": {
+        "tags": ["Professionals"],
+        "summary": "Get all professionals",
+        "responses": {
+          "200": {
+            "description": "List of professionals",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProfessionalDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/appointments/book": {
+      "post": {
+        "tags": ["Appointments"],
+        "summary": "Book an appointment",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["professionalId", "date", "startTime", "endTime"],
+                "properties": {
+                  "professionalId": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2025-11-25"
+                  },
+                  "startTime": {
+                    "type": "string",
+                    "format": "time",
+                    "example": "09:00:00"
+                  },
+                  "endTime": {
+                    "type": "string",
+                    "format": "time",
+                    "example": "10:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Appointment booked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppointmentDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Conflict or validation error"
+          }
+        }
+      }
+    },
+    "/api/appointments/cancel/{id}": {
+      "put": {
+        "tags": ["Appointments"],
+        "summary": "Cancel appointment",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Appointment cancelled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Appointment cancelled"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Appointment not found"
+          }
+        }
+      }
+    },
+    "/api/appointments/my": {
+      "get": {
+        "tags": ["Appointments"],
+        "summary": "Get user's appointments",
+        "description": "Get appointments for authenticated user (as client or professional)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of appointments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AppointmentDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/appointments/{id}": {
+      "get": {
+        "tags": ["Appointments"],
+        "summary": "Get appointment by ID",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Appointment details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppointmentDTO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Appointment not found"
+          }
+        }
+      }
+    },
+    "/api/availability/professional/me/save": {
+      "post": {
+        "tags": ["Availability"],
+        "summary": "Create availability slot (professional)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title", "date", "startTime", "endTime"],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "example": "Morning Slot"
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2025-11-25"
+                  },
+                  "startTime": {
+                    "type": "string",
+                    "format": "time",
+                    "example": "09:00:00"
+                  },
+                  "endTime": {
+                    "type": "string",
+                    "format": "time",
+                    "example": "12:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Availability created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/availability/professional/edit": {
+      "put": {
+        "tags": ["Availability"],
+        "summary": "Edit availability slot (professional)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["id"],
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "title": {
+                    "type": "string",
+                    "example": "Updated Slot"
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "startTime": {
+                    "type": "string",
+                    "format": "time"
+                  },
+                  "endTime": {
+                    "type": "string",
+                    "format": "time"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Availability updated"
+          }
+        }
+      }
+    },
+    "/api/availability/professional/delete/{id}": {
+      "delete": {
+        "tags": ["Availability"],
+        "summary": "Delete availability slot (professional)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Availability deleted"
+          },
+          "404": {
+            "description": "Availability not found"
+          }
+        }
+      }
+    },
+    "/api/availability/professional/me": {
+      "get": {
+        "tags": ["Availability"],
+        "summary": "Get authenticated professional's availability",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of availability slots",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AvailabilityDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/availability/professional/{id}": {
+      "get": {
+        "tags": ["Availability"],
+        "summary": "Get availability for a professional by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of availability slots",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AvailabilityDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/availability/user/me/save": {
+      "post": {
+        "tags": ["Availability"],
+        "summary": "Add availabilities for user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title", "date", "startTime", "endTime"],
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "startTime": {
+                    "type": "string",
+                    "format": "time"
+                  },
+                  "endTime": {
+                    "type": "string",
+                    "format": "time"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Availability created"
+          }
+        }
+      }
+    },
+    "/api/availability/user/me": {
+      "get": {
+        "tags": ["Availability"],
+        "summary": "Get authenticated user's availability",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of availability slots",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AvailabilityDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/availability/user/{id}": {
+      "get": {
+        "tags": ["Availability"],
+        "summary": "Get user availability by ID",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of availability slots",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AvailabilityDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reviews/add": {
+      "post": {
+        "tags": ["Reviews"],
+        "summary": "Add or update a review",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["professionalId", "score", "review"],
+                "properties": {
+                  "professionalId": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "score": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 5,
+                    "example": 5
+                  },
+                  "review": {
+                    "type": "string",
+                    "example": "Great service!"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Review added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reviews/professionals/{professionalId}": {
+      "get": {
+        "tags": ["Reviews"],
+        "summary": "Get reviews for a professional",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "professionalId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of reviews",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reviews/professionals/{professionalId}/average": {
+      "get": {
+        "tags": ["Reviews"],
+        "summary": "Get average rating for a professional",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "professionalId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Average rating",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "averageRating": {
+                      "type": "number",
+                      "format": "float",
+                      "example": 4.5
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reviews/my-received-reviews": {
+      "get": {
+        "tags": ["Reviews"],
+        "summary": "Get reviews received as a professional",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of received reviews",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reviews/my-given-reviews": {
+      "get": {
+        "tags": ["Reviews"],
+        "summary": "Get reviews given as a user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of given reviews",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "UserDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "username": {
+            "type": "string",
+            "example": "john_doe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john@example.com"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["USER", "PROFESSIONAL"],
+            "example": "USER"
+          },
+          "enabled": {
+            "type": "boolean",
+            "example": true
+          },
+          "authProvider": {
+            "type": "string",
+            "example": "LOCAL"
+          }
+        }
+      },
+      "ProfessionalDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "firstName": {
+            "type": "string",
+            "example": "Alice"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Miller"
+          },
+          "profession": {
+            "type": "string",
+            "example": "Plumber"
+          },
+          "location": {
+            "type": "string",
+            "example": "New York"
+          },
+          "description": {
+            "type": "string",
+            "example": "Experienced plumber"
+          },
+          "phone": {
+            "type": "string",
+            "example": "1234567890"
+          },
+          "hourlyRate": {
+            "type": "string",
+            "example": "50"
+          },
+          "reviewsReceived": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReviewDTO"
+            }
+          }
+        }
+      },
+      "AppointmentDTO": {
+        "type": "object",
+        "properties": {
+          "appointmentId": {
+            "type": "integer",
+            "example": 1
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-11-25"
+          },
+          "startTime": {
+            "type": "string",
+            "format": "time",
+            "example": "09:00:00"
+          },
+          "endTime": {
+            "type": "string",
+            "format": "time",
+            "example": "10:00:00"
+          },
+          "appointmentStatus": {
+            "type": "string",
+            "enum": ["BOOKED", "CANCELLED", "COMPLETED"],
+            "example": "BOOKED"
+          },
+          "professionalId": {
+            "type": "integer",
+            "example": 1
+          },
+          "professionalName": {
+            "type": "string",
+            "example": "Alice Miller"
+          },
+          "userId": {
+            "type": "integer",
+            "example": 2
+          },
+          "userName": {
+            "type": "string",
+            "example": "john_doe"
+          }
+        }
+      },
+      "AvailabilityDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "example": "Morning Slot"
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-11-25"
+          },
+          "startTime": {
+            "type": "string",
+            "format": "time",
+            "example": "09:00:00"
+          },
+          "endTime": {
+            "type": "string",
+            "format": "time",
+            "example": "12:00:00"
+          },
+          "professionalId": {
+            "type": "integer",
+            "example": 1
+          },
+          "userId": {
+            "type": "integer",
+            "example": 1
+          }
+        }
+      },
+      "ReviewDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "score": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5,
+            "example": 5
+          },
+          "review": {
+            "type": "string",
+            "example": "Great work, very professional!"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-11-23T10:00:00Z"
+          },
+          "userId": {
+            "type": "integer",
+            "example": 2
+          },
+          "username": {
+            "type": "string",
+            "example": "john_doe"
+          },
+          "professionalId": {
+            "type": "integer",
+            "example": 1
+          }
+        }
+      }
+    }
+  }
+}
