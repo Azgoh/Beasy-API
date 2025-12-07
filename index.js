@@ -72,13 +72,22 @@ async function startServer() {
       }
     }
 
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
+    // Only start listening if not in test mode
+    if (process.env.NODE_ENV !== "test") {
+      app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+      });
+    }
   } catch (err) {
     console.error("Unable to connect to DB or start server:", err);
     process.exit(1);
   }
 }
 
-startServer();
+// Export app for testing
+export { app };
+
+// Start server if not imported as module
+if (process.env.NODE_ENV !== "test") {
+  startServer();
+}

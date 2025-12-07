@@ -4,11 +4,12 @@ import { generateToken, verifyToken } from "../utils/jwt.js";
 import { v4 as uuidv4 } from "uuid";
 import emailService from "./EmailService.js"; 
 import { Op } from "sequelize";
+import { mapUserDto } from "../mappers/UserMapper.js";
 
 export class userService {
 
   // Register a new user
-  async registerUser({ username, email, password }) {
+  async registerUser({ username, email, password, role }) {
     const existingUser = await User.findOne({ where: { username } });
     if (existingUser) throw new Error("Username exists");
 
@@ -22,7 +23,7 @@ export class userService {
       email,
       password: await bcrypt.hash(password, 10),
       enabled: false,
-      role: "USER",
+      role: role || "USER",
       authProvider: "LOCAL",
       verificationToken: token,
     });
@@ -30,7 +31,7 @@ export class userService {
     const confirmationUrl = `http://localhost:8080/api/verify-email?token=${token}`;
     await emailService.sendEmail(email, "Email Verification", `Click this link to verify your email: ${confirmationUrl}`);
 
-    return { message: "Registration successful. Please check your email." };
+    return { message: "User registered successfully. Please verify your email." };
   }
 
   // Verify email token
@@ -39,15 +40,14 @@ export class userService {
     if (!user) return "Invalid";
 
     user.enabled = true;
-    user.verificationToken = null; // optional: clear token
+    user.verificationToken = null;
     await user.save();
 
     return "Valid";
   }
 
-  // Login user and return JWT
+  // Login user and return JWT token string
   async loginUser(payload) {
-    // accept { identifier, username, email, password }
     const identifier = payload && (payload.identifier || payload.username || payload.email);
     const password = payload && payload.password;
 
@@ -59,7 +59,7 @@ export class userService {
       },
     });
 
-    if (!user) throw new Error("User not found");
+    if (!user) throw new Error("Invalid credentials");
     if (!user.enabled) throw new Error("Account not enabled. Verify your email.");
     if (user.authProvider !== "LOCAL") throw new Error("This account uses OAuth login");
 
@@ -67,7 +67,8 @@ export class userService {
     if (!isMatch) throw new Error("Invalid credentials");
 
     const token = generateToken({ id: user.id, role: user.role });
-    return token;
+    
+    return token; // Return token string only (your frontend expects this)
   }
 
   // Get currently authenticated user from JWT payload

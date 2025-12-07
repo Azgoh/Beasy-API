@@ -9,10 +9,10 @@ export const userController = {
     try {
       const request = req.body;
       await userService.registerUser(request);
-      res.status(200).send("Registration successful. Please check your email to verify your account.");
+      res.send("Registration successful! Please check your email to verify your account.");
     } catch (err) {
       console.error(err);
-      res.status(400).json({ message: err.message });
+      res.status(400).send(err.message);
     }
   },
 
@@ -25,7 +25,7 @@ export const userController = {
       res.redirect(302, redirectUrl);
     } catch (err) {
       console.error(err);
-      res.status(400).json({ message: "Invalid verification token" });
+      res.status(400).send("Invalid verification token");
     }
   },
 
@@ -34,10 +34,10 @@ export const userController = {
     try {
       const request = req.body;
       const token = await userService.loginUser(request);
-      res.status(200).send(token);
+      res.send(token);
     } catch (err) {
       console.error(err);
-      res.status(400).json({ message: err.message });
+      res.status(400).send(err.message);
     }
   },
 
@@ -49,7 +49,7 @@ export const userController = {
       res.json(dtos);
     } catch (err) {
       console.error(err);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).send("Internal server error");
     }
   },
 
@@ -57,55 +57,52 @@ export const userController = {
   async getUserById(req, res) {
     const { id } = req.params;
     try {
-      // support the common "me" shortcut (frontend calls /users/me)
       if (id === "me") {
-        if (!req.user) return res.status(401).json({ message: "Unauthorized" });
+        if (!req.user) return res.status(401).send("Unauthorized");
         return res.json(mapUserDto(req.user));
       }
 
       const user = await userService.getUserById(id);
-      if (!user) return res.status(404).json({ message: "User not found" });
+      if (!user) return res.status(404).send("User not found");
       res.json(mapUserDto(user));
     } catch (err) {
       console.error(err);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).send("Internal server error");
     }
   },
 
   // GET /api/users/me
   async getUserByJwt(req, res) {
     try {
-      const user = await userService.getAuthenticatedUser(req.user && req.user.id);
+      if (!req.user) return res.status(401).send("Unauthorized");
+      const user = await userService.getAuthenticatedUser(req.user.id);
       res.json(mapUserDto(user));
-      if (!req.user) return res.status(401).json({ message: "Unauthorized" });
-      res.json(mapUserDto(req.user));
     } catch (err) {
       console.error(err);
-      res.status(401).json({ message: "Unauthorized" });
+      res.status(401).send("Unauthorized");
     }
   },
 
   // DELETE /api/users/deleteAll
   async deleteAllUsers(req, res) {
     try {
-      // εδώ μπορείς να βάλεις έλεγχο για admin πχ req.user.role === 'ADMIN'
       await userService.deleteAllUsers();
       res.send("All users deleted successfully");
     } catch (err) {
       console.error(err);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).send("Internal server error");
     }
   },
 
   // GET /api/me
   async getMe(req, res) {
     try {
-      if (!req.user) return res.status(401).json({ message: "Unauthorized" });
+      if (!req.user) return res.status(401).send("Unauthorized");
       const dto = await userProfileService.getCurrentUserWithProfessional(req.user);
       return res.json(dto);
     } catch (err) {
       console.error(err);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).send("Internal server error");
     }
   },
 };
