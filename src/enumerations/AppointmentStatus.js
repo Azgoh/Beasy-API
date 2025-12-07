@@ -1,5 +1,5 @@
 export const AppointmentStatus = {
     BOOKED: "BOOKED",
-    CANCELED: "CANCELED",
+    CANCELED: "CANCELLED",
     COMPLETED: "COMPLETED"
 }
