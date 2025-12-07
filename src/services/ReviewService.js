@@ -23,15 +23,19 @@ export class reviewService {
       existingReview.score = score;
       existingReview.review = reviewText;
       existingReview.timestamp = new Date();
-      return await existingReview.save();
+      await existingReview.save();
+      // Reload to get the full model with all fields
+      return await existingReview.reload();
     } else {
-      return await Review.create({
+      const newReview = await Review.create({
         user_id: userId,
         professional_id: professionalId,
         score,
         review: reviewText,
         timestamp: new Date(),
       });
+      // Reload to ensure all default values and timestamps are populated
+      return await newReview.reload();
     }
   }
 
