@@ -1,15 +1,16 @@
 import reviewService from "../services/ReviewService.js";
 import { mapReviewResponseDto, mapReviewResponseDtoList } from "../mappers/ReviewMapper.js";
+import { Professional } from "../models/index.js";
 
 export const reviewController = {
 
   // POST /api/reviews/add
   async addOrUpdateReview(req, res) {
     try {
-      const reviewRequest = req.body;
-      reviewRequest.userId = req.user.id;
+      const userId = req.user.id;
+      const reviewRequestDto = req.body;
 
-      const review = await reviewService.addOrUpdateReview(reviewRequest);
+      const review = await reviewService.addOrUpdateReview(userId, reviewRequestDto);
       res.json(mapReviewResponseDto(review));
     } catch (err) {
       console.error(err);
@@ -25,7 +26,7 @@ export const reviewController = {
       res.json(mapReviewResponseDtoList(reviews));
     } catch (err) {
       console.error(err);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(400).json({ message: err.message });
     }
   },
 
@@ -37,19 +38,26 @@ export const reviewController = {
       res.json(avg);
     } catch (err) {
       console.error(err);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(400).json({ message: err.message });
     }
   },
 
   // GET /api/reviews/my-received-reviews
   async getMyReceivedReviewsAsAProfessional(req, res) {
     try {
-      const professionalId = req.user.professionalId; 
-      const reviews = await reviewService.getMyReceivedReviewsAsAProfessional(professionalId);
+      const userId = req.user.id;
+
+      // Find professional by user_id (following the pattern from professional registration)
+      const professional = await Professional.findOne({ where: { user_id: userId } });
+      if (!professional) {
+        return res.status(400).json({ message: "Professional not found" });
+      }
+
+      const reviews = await reviewService.getMyReceivedReviewsAsAProfessional(professional.id);
       res.json(mapReviewResponseDtoList(reviews));
     } catch (err) {
       console.error(err);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(400).json({ message: err.message });
     }
   },
 
@@ -61,7 +69,7 @@ export const reviewController = {
       res.json(mapReviewResponseDtoList(reviews));
     } catch (err) {
       console.error(err);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(400).json({ message: err.message });
     }
   },
 
