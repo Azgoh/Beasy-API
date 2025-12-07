@@ -103,13 +103,15 @@ export const availabilityController = {
   // POST /api/availability/user/me/save
   async addAvailabilitiesForUser(req, res) {
     try {
-      const batch = req.body.availabilities;
       const userId = req.user.id;
-      const result = await availabilityService.saveAvailabilitiesForUser(
-        batch,
-        userId
+      const { availabilities } = req.body;
+
+      const saved = await availabilityService.saveAvailabilitiesForUser(
+        userId,
+        availabilities
       );
-      res.json(result);
+
+      res.status(200).json(saved);
     } catch (err) {
       console.error(err);
       res.status(400).json({ message: err.message });
@@ -120,13 +122,11 @@ export const availabilityController = {
   async getMyUserAvailability(req, res) {
     try {
       const userId = req.user.id;
-      const availabilities = await availabilityService.getMyUserAvailability(
-        userId
-      );
-      res.json(availabilities);
+      const availabilities = await availabilityService.getMyUserAvailability(userId);
+      res.status(200).json(availabilities);
     } catch (err) {
       console.error(err);
-      res.status(500).json({ message: err.message });
+      res.status(500).json({ message: "Internal server error" });
     }
   },
 
@@ -134,13 +134,11 @@ export const availabilityController = {
   async getUserAvailabilityById(req, res) {
     try {
       const { id } = req.params;
-      const availabilities = await availabilityService.getUserAvailabilityById(
-        id
-      );
-      res.json(availabilities);
+      const availabilities = await availabilityService.getUserAvailabilityById(id);
+      res.status(200).json(availabilities);
     } catch (err) {
       console.error(err);
-      res.status(500).json({ message: err.message });
+      res.status(500).json({ message: "Internal server error" });
     }
   },
 };

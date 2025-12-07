@@ -1,4 +1,4 @@
-import { Availability, Professional } from "../models/index.js";
+import { Availability, Professional, User } from "../models/index.js";
 import moment from "moment";
 import { sanitizeDateToIso } from "../utils/dateUtils.js";
 
@@ -296,32 +296,95 @@ export async function updateProfessionalAvailabilityOnCancellation({ professiona
 }
 
 /**
- * Save availabilities for a user
+ * Save availability for a user (batch)
  */
-export async function saveAvailabilitiesForUser(dtos, userId) {
+export async function saveAvailabilitiesForUser(userId, availabilities) {
+  // Validate user exists
   const user = await User.findByPk(userId);
-  const availabilities = await Promise.all(
-    dtos.map(dto =>
-      Availability.create({
-        user_id: user.id,
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const createdAvailabilities = await Promise.all(
+    availabilities.map(async (dto) => {
+      // normalize date to YYYY-MM-DD for storage
+      if (dto.date) dto.date = sanitizeDateToIso(dto.date);
+
+      const payload = {
+        user_id: userId,
         title: dto.title,
         date: dto.date,
         startTime: dto.startTime,
         endTime: dto.endTime,
-      })
-    )
+      };
+
+      const created = await Availability.create(payload);
+      const plain = created.get ? created.get({ plain: true }) : created;
+
+      return {
+        id: plain.id,
+        title: plain.title,
+        date: plain.date ? moment(plain.date).format("D MMMM YYYY") : plain.date,
+        startTime: plain.startTime,
+        endTime: plain.endTime,
+        user_id: plain.user_id,
+      };
+    })
   );
-  return availabilities;
+
+  return createdAvailabilities;
 }
 
 /**
- * Get user's availability
+ * Get authenticated user's availability
  */
-export async function getUserAvailability(userId) {
-  return await Availability.findAll({
+export async function getMyUserAvailability(userId) {
+  if (!userId) {
+    throw new Error("Invalid user id");
+  }
+
+  const availabilities = await Availability.findAll({
     where: { user_id: userId },
-    order: [["date", "ASC"], ["startTime", "ASC"]],
+    order: [
+      ["date", "ASC"],
+      ["startTime", "ASC"],
+    ],
   });
+
+  return availabilities.map((avail) => ({
+    id: avail.id,
+    title: avail.title,
+    date: moment(avail.date).format("D MMMM YYYY"),
+    startTime: avail.startTime,
+    endTime: avail.endTime,
+    user_id: avail.user_id,
+  }));
+}
+
+/**
+ * Get user availability by user ID
+ */
+export async function getUserAvailabilityById(userId) {
+  if (!userId) {
+    throw new Error("Invalid user id");
+  }
+
+  const availabilities = await Availability.findAll({
+    where: { user_id: userId },
+    order: [
+      ["date", "ASC"],
+      ["startTime", "ASC"],
+    ],
+  });
+
+  return availabilities.map((avail) => ({
+    id: avail.id,
+    title: avail.title,
+    date: moment(avail.date).format("D MMMM YYYY"),
+    startTime: avail.startTime,
+    endTime: avail.endTime,
+    user_id: avail.user_id,
+  }));
 }
 
 // new/updated helper: robustly resolve a professional id and return availability
@@ -376,3 +439,15 @@ function sanitizeDate(input) {
   if (fallback.isValid()) return fallback.toDate();
   throw new Error(`Invalid date format: ${input}`);
 }
+
+export default {
+  saveAvailabilityForProfessional,
+  editAvailabilityForProfessional,
+  deleteAvailabilitySlotForProfessional,
+  getProfessionalAvailability,
+  updateProfessionalAvailabilityOnBooking,
+  updateProfessionalAvailabilityOnCancellation,
+  saveAvailabilitiesForUser,
+  getMyUserAvailability,
+  getUserAvailabilityById,
+};
