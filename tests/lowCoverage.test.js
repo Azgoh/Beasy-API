@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 let app;
 
 test.before(async () => {
-  // Following copilot-instructions section 1: Entry is src/index.js
+  
   const appModule = await import("../index.js");
   app = appModule.app;
   await sequelize.sync({ force: true });
@@ -18,7 +18,7 @@ test.after.always(async () => {
 
 // TARGET: index.js lines 45-85 (middleware setup, error handlers, route mounting)
 test.serial("Server should handle 500 errors with proper error handler", async (t) => {
-  // Following copilot-instructions section 5: Controllers catch and res.status(400|500).json
+  
   // This tests the global error handler middleware
   const res = await request(app)
     .get("/api/nonexistent-endpoint-that-triggers-error");
@@ -27,7 +27,7 @@ test.serial("Server should handle 500 errors with proper error handler", async (
 });
 
 test.serial("Server should serve swagger UI documentation", async (t) => {
-  // Following copilot-instructions section 6: Integration points
+  
   const res = await request(app)
     .get("/api-docs/");
 
@@ -57,7 +57,7 @@ test.serial("Server should handle large payloads", async (t) => {
 });
 
 test.serial("Server should mount all routes correctly", async (t) => {
-  // Following copilot-instructions section 1: Layers: routes/ -> controllers/ -> services/
+  
   const routes = [
     "/api/professionals",
     "/api/appointments/my-appointments",
@@ -71,7 +71,7 @@ test.serial("Server should mount all routes correctly", async (t) => {
 });
 
 test.serial("Server should handle OPTIONS for all CORS routes", async (t) => {
-  // Following copilot-instructions section 2: Frontend at localhost:4200
+  
   const res = await request(app)
     .options("/api/register")
     .set("Origin", "http://localhost:4200")
@@ -83,7 +83,7 @@ test.serial("Server should handle OPTIONS for all CORS routes", async (t) => {
 
 // TARGET: database.js lines 17-27, 32-39 (connection retry, error handling)
 test.serial("Database should handle connection pool operations", async (t) => {
-  // Following copilot-instructions section 6: Postgres via sequelize
+  
   try {
     // Test connection pool by running multiple queries
     const promises = [];
@@ -100,7 +100,7 @@ test.serial("Database should handle connection pool operations", async (t) => {
 });
 
 test.serial("Database should handle transaction rollback", async (t) => {
-  // Following copilot-instructions section 5: Repositories abstract DB access
+  
   const transaction = await sequelize.transaction();
   
   try {
@@ -126,7 +126,7 @@ test.serial("Database should handle transaction rollback", async (t) => {
 });
 
 test.serial("Database should handle query timeout scenarios", async (t) => {
-  // Following copilot-instructions section 3: DB_URL configured in .env
+  
   try {
     // Test that database can handle query operations
     const result = await sequelize.query("SELECT 1 as value", {
@@ -142,7 +142,7 @@ test.serial("Database should handle query timeout scenarios", async (t) => {
 
 // TARGET: ProfessionalService.js lines 51, 56-57, 61-67, 71-82
 test.serial("ProfessionalService should handle profession filtering edge cases", async (t) => {
-  // Following copilot-instructions section 5: Services contain business logic
+  
   const professionalService = (await import("../src/services/ProfessionalService.js")).default;
   
   const hashedPassword = await bcrypt.hash("pass", 10);
@@ -193,7 +193,7 @@ test.serial("ProfessionalService should handle professional profile creation", a
   });
 
   try {
-    // Following copilot-instructions section 5: Services for business logic
+    
     const profile = await professionalService.createProfessionalProfile(user.id, {
       profession: "Electrician",
       bio: "Expert electrician",
@@ -307,7 +307,7 @@ test.serial("ProfessionalService should handle non-existent professional by ID",
 
 // TARGET: AvailabilityService.js lines 412, 420-421, 425-441
 test.serial("AvailabilityService should validate availability time ranges", async (t) => {
-  // Following copilot-instructions section 5: Repositories abstract DB access
+  
   const availabilityService = (await import("../src/services/AvailabilityService.js")).default;
   
   const hashedPassword = await bcrypt.hash("pass", 10);
@@ -489,7 +489,7 @@ test.serial("AvailabilityService should handle overlapping slot detection", asyn
 
 // Additional tests for other low coverage areas
 test.serial("Server should handle request logging", async (t) => {
-  // Following copilot-instructions section 1: Entry is src/index.js
+  
   const res = await request(app)
     .get("/api/professionals")
     .set("User-Agent", "Test Agent");

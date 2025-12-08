@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 let app;
 
 test.before(async () => {
-  // Following copilot-instructions section 1: Entry is src/index.js
+  
   const appModule = await import("../index.js");
   app = appModule.app;
   await sequelize.sync({ force: true });
@@ -18,7 +18,7 @@ test.after.always(async () => {
 
 // TARGET: index.js lines 45-85 (middleware and route setup)
 test.serial("Server should handle CORS preflight for all routes", async (t) => {
-  // Following copilot-instructions section 5: Controllers are thin adapters
+  
   const routes = [
     "/api/register",
     "/api/login",
@@ -42,7 +42,7 @@ test.serial("Server should handle CORS preflight for all routes", async (t) => {
 
 // TARGET: database.js lines 17-27, 32-39 (connection error handling)
 test.serial("Database should handle connection issues gracefully", async (t) => {
-  // Following copilot-instructions section 6: Postgres via sequelize
+  
   try {
     // Test that sequelize instance exists and has proper config
     t.truthy(sequelize.config, "Sequelize should have config");
@@ -58,7 +58,7 @@ test.serial("Database should handle connection issues gracefully", async (t) => 
 
 // TARGET: UserController.js lines 76-83, 92-94, 104-106 (error paths)
 test.serial("UserController should handle service errors in getUserProfile", async (t) => {
-  // Following copilot-instructions section 8: authMiddleware injects req.user
+  
   // Create a user first
   const hashedPassword = await bcrypt.hash("password123", 10);
   const user = await User.create({
@@ -70,7 +70,7 @@ test.serial("UserController should handle service errors in getUserProfile", asy
     authProvider: "LOCAL",
   });
 
-  // Following copilot-instructions section 1: JWTs issued in src/utils/jwt.js
+  
   const jwt = await import("../src/utils/jwt.js");
   const token = jwt.generateToken({ id: user.id });
 
@@ -83,7 +83,7 @@ test.serial("UserController should handle service errors in getUserProfile", asy
 });
 
 test.serial("UserController should handle profile update", async (t) => {
-  // Following copilot-instructions section 5: Controllers map request -> service
+  
   const hashedPassword = await bcrypt.hash("password123", 10);
   const user = await User.create({
     username: "updatetest",
@@ -109,7 +109,7 @@ test.serial("UserController should handle profile update", async (t) => {
 });
 
 test.serial("UserController should handle password change", async (t) => {
-  // Following copilot-instructions section 5: Business logic in services
+  
   const hashedPassword = await bcrypt.hash("oldpass", 10);
   const user = await User.create({
     username: "passtest",
@@ -137,7 +137,7 @@ test.serial("UserController should handle password change", async (t) => {
 
 // TARGET: AppointmentController.js lines 61, 67-69, 77-78, 90-91
 test.serial("AppointmentController should handle appointment booking errors", async (t) => {
-  // Following copilot-instructions section 1: Layers: routes -> controllers -> services
+  
   const hashedPassword = await bcrypt.hash("password123", 10);
   const user = await User.create({
     username: "appouser",
@@ -186,7 +186,7 @@ test.serial("AppointmentController should handle cancellation errors", async (t)
 
 // TARGET: AvailabilityController.js lines 118, 128-130, 140-142
 test.serial("AvailabilityController should handle availability creation errors", async (t) => {
-  // Following copilot-instructions section 1: Auth uses JWT
+  
   const hashedPassword = await bcrypt.hash("password123", 10);
   const user = await User.create({
     username: "availuser",
@@ -261,7 +261,7 @@ test.serial("AvailabilityController should handle delete errors", async (t) => {
 
 // TARGET: ProfessionalController.js lines 85-87
 test.serial("ProfessionalController should handle profile creation", async (t) => {
-  // Following copilot-instructions section 5: Repositories abstract DB access
+  
   const hashedPassword = await bcrypt.hash("password123", 10);
   const user = await User.create({
     username: "profcreate",
@@ -364,7 +364,7 @@ test.serial("ReviewController should handle delete errors", async (t) => {
 
 // TARGET: UserService.js lines 41-46 (error handling in password change)
 test.serial("UserService password change validation", async (t) => {
-  // Following copilot-instructions section 5: Business logic in services
+  
   const userService = (await import("../src/services/UserService.js")).default;
   
   const hashedPassword = await bcrypt.hash("oldpassword", 10);
@@ -389,7 +389,7 @@ test.serial("UserService password change validation", async (t) => {
 
 // TARGET: EmailService.js lines 28-30 (error handling)
 test.serial("EmailService should handle send failures gracefully", async (t) => {
-  // Following copilot-instructions section 3: Email uses SMTP_* env vars
+  
   const emailService = (await import("../src/services/EmailService.js")).default;
   
   try {
@@ -404,7 +404,7 @@ test.serial("EmailService should handle send failures gracefully", async (t) => 
   }
 });
 
-// Additional coverage tests following copilot-instructions patterns
+
 
 // TARGET: AuthMiddleware.js token validation edge cases
 test.serial("AuthMiddleware should reject malformed tokens", async (t) => {
@@ -426,7 +426,7 @@ test.serial("AuthMiddleware should reject missing Authorization header", async (
 
 // TARGET: Error handling in all controllers
 test.serial("Controllers should return 500 for unexpected database errors", async (t) => {
-  // Following copilot-instructions section 5: Controllers catch and return error codes
+  
   const hashedPassword = await bcrypt.hash("pass", 10);
   const user = await User.create({
     username: "errortest",
@@ -450,7 +450,7 @@ test.serial("Controllers should return 500 for unexpected database errors", asyn
 
 // TARGET: Role-based access control
 test.serial("Controllers should enforce role-based access", async (t) => {
-  // Following copilot-instructions section 1: Auth validates JWTs
+  
   const hashedPassword = await bcrypt.hash("pass", 10);
   const regularUser = await User.create({
     username: "regular",

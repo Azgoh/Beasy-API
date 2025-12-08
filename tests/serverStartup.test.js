@@ -2,7 +2,7 @@ import test from "ava";
 import request from "supertest";
 import { sequelize } from "../src/models/index.js";
 
-// Following copilot-instructions section 1: Entry point
+
 // Note: Actual entry is /index.js (not src/index.js as per copilot-instructions)
 
 test.before(async () => {
@@ -22,7 +22,7 @@ test.serial("Express app should be exported and configured", async (t) => {
 });
 
 test.serial("Database connection should be established", async (t) => {
-  // Following copilot-instructions section 6: Postgres via sequelize
+  
   try {
     await sequelize.authenticate();
     t.pass("Database connection is established");
@@ -32,7 +32,7 @@ test.serial("Database connection should be established", async (t) => {
 });
 
 test.serial("Database models should be synced", async (t) => {
-  // Following copilot-instructions section 1: Layers include models/
+  
   const models = sequelize.models;
   
   t.truthy(models.User, "User model should exist");
@@ -43,7 +43,7 @@ test.serial("Database models should be synced", async (t) => {
 });
 
 test.serial("Sequelize should be properly configured", async (t) => {
-  // Following copilot-instructions section 3: DB env vars
+  
   const options = sequelize.options;
   
   t.truthy(options.dialect, "Should have a dialect configured");
@@ -55,7 +55,7 @@ test.serial("Sequelize should be properly configured", async (t) => {
 });
 
 test.serial("Database should support transactions", async (t) => {
-  // Following copilot-instructions section 6: Postgres via sequelize
+  
   const transaction = await sequelize.transaction();
   
   try {
@@ -69,7 +69,7 @@ test.serial("Database should support transactions", async (t) => {
 });
 
 test.serial("Database should handle basic queries", async (t) => {
-  // Following copilot-instructions section 5: Repositories handle low-level DB access
+  
   try {
     const result = await sequelize.query("SELECT 1 as test");
     t.truthy(result, "Query should execute");
@@ -80,7 +80,7 @@ test.serial("Database should handle basic queries", async (t) => {
 });
 
 test.serial("Models should have proper table names", async (t) => {
-  // Following copilot-instructions section 1: Models in src/models/
+  
   const { User, Professional, Appointment, Review, Availability } = sequelize.models;
   
   t.truthy(User.tableName, "User model should have table name");
@@ -91,12 +91,12 @@ test.serial("Models should have proper table names", async (t) => {
 });
 
 test.serial("Sequelize should use correct environment", async (t) => {
-  // Following copilot-instructions section 3: Environment variables
+  
   const env = process.env.NODE_ENV;
   
   t.is(env, "test", "Should be running in test environment");
   
-  // Following copilot-instructions section 3: DB_URL or DB_NAME
+  
   const dbUrl = process.env.DB_URL;
   const dbName = process.env.DB_NAME;
   
@@ -104,7 +104,7 @@ test.serial("Sequelize should use correct environment", async (t) => {
 });
 
 test.serial("Database should handle model creation", async (t) => {
-  // Following copilot-instructions section 5: Services use models for business logic
+  
   const { User } = sequelize.models;
   
   const testUser = await User.create({
@@ -123,7 +123,7 @@ test.serial("Database should handle model creation", async (t) => {
 });
 
 test.serial("Database should handle model queries", async (t) => {
-  // Following copilot-instructions section 1: Layers include repositories/
+  
   const { User } = sequelize.models;
   
   await User.create({
@@ -144,7 +144,7 @@ test.serial("Database should handle model queries", async (t) => {
 });
 
 test.serial("Server should have proper middleware and routes configured", async (t) => {
-  // Following copilot-instructions section 1: Auth uses JWT and authMiddleware
+  
   // Import from root index.js
   const appModule = await import("../index.js");
   const app = appModule.app;
@@ -157,7 +157,7 @@ test.serial("Server should have proper middleware and routes configured", async 
 });
 
 test.serial("Server should have CORS middleware configured", async (t) => {
-  // Following copilot-instructions section 2: Frontend at localhost:4200
+  
   const appModule = await import("../index.js");
   const app = appModule.app;
   
@@ -169,7 +169,7 @@ test.serial("Server should have CORS middleware configured", async (t) => {
 });
 
 test.serial("Server should have JSON body parser configured", async (t) => {
-  // Following copilot-instructions section 5: Controllers handle JSON requests
+  
   const appModule = await import("../index.js");
   const app = appModule.app;
   
@@ -182,8 +182,8 @@ test.serial("Server should have JSON body parser configured", async (t) => {
 });
 
 test.serial("Server should have auth middleware protecting routes", async (t) => {
-  // Following copilot-instructions section 1: Auth uses stateless JWTs
-  // Following copilot-instructions section 8: authMiddleware injects req.user
+  
+  
   const appModule = await import("../index.js");
   const app = appModule.app;
   
@@ -193,7 +193,7 @@ test.serial("Server should have auth middleware protecting routes", async (t) =>
 });
 
 test.serial("Server should mount all route handlers", async (t) => {
-  // Following copilot-instructions section 1: Layers: routes/ -> controllers/
+  
   const appModule = await import("../index.js");
   const app = appModule.app;
   

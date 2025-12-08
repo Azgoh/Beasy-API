@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 let app;
 
 test.before(async () => {
-  // Following copilot-instructions section 1: Entry is src/index.js
+  
   const appModule = await import("../index.js");
   app = appModule.app;
   await sequelize.sync({ force: true });
@@ -16,7 +16,7 @@ test.after.always(async () => {
   await sequelize.close();
 });
 
-// Following copilot-instructions section 5: Error strategy - controllers catch and res.status(400|500).json({ message })
+
 
 test.serial("Server should handle 404 for unknown routes", async (t) => {
   const res = await request(app)
@@ -35,7 +35,7 @@ test.serial("Server should handle malformed JSON", async (t) => {
 });
 
 test.serial("Server should set proper CORS headers", async (t) => {
-  // Following copilot-instructions section 2: Frontend at localhost:4200
+  
   const res = await request(app)
     .options("/api/users/me")
     .set("Origin", "http://localhost:4200");
@@ -44,7 +44,7 @@ test.serial("Server should set proper CORS headers", async (t) => {
 });
 
 test.serial("Server should handle OPTIONS requests for preflight", async (t) => {
-  // Following copilot-instructions section 1: Auth uses JWT
+  
   const res = await request(app)
     .options("/api/appointments/book")
     .set("Origin", "http://localhost:4200")
@@ -56,7 +56,7 @@ test.serial("Server should handle OPTIONS requests for preflight", async (t) => 
 });
 
 test.serial("Server should reject unauthorized requests to protected endpoints", async (t) => {
-  // Following copilot-instructions section 8: authMiddleware injects req.user
+  
   const res = await request(app)
     .get("/api/users/me");
 
@@ -64,7 +64,7 @@ test.serial("Server should reject unauthorized requests to protected endpoints",
 });
 
 test.serial("Server should reject requests with invalid JWT", async (t) => {
-  // Following copilot-instructions section 1: Auth uses stateless JWTs
+  
   const res = await request(app)
     .get("/api/users/me")
     .set("Authorization", "Bearer invalid_token_xyz");
@@ -73,7 +73,7 @@ test.serial("Server should reject requests with invalid JWT", async (t) => {
 });
 
 test.serial("Server should handle missing username in registration", async (t) => {
-  // Following copilot-instructions section 2: POST /api/register
+  
   const res = await request(app)
     .post("/api/register")
     .send({
@@ -115,7 +115,7 @@ test.serial("Server should handle completely empty registration body", async (t)
 });
 
 test.serial("Server should handle duplicate username registration", async (t) => {
-  // Following copilot-instructions section 5: Controllers handle response codes
+  
   const hashedPassword = await bcrypt.hash("password123", 10);
   
   await User.create({
@@ -139,12 +139,12 @@ test.serial("Server should handle duplicate username registration", async (t) =>
 });
 
 test.serial("Server should handle invalid verification token", async (t) => {
-  // Following copilot-instructions section 2: GET /api/verify-email redirects to frontend
+  
   const res = await request(app)
     .get("/api/verify-email")
     .query({ token: "invalid-token-xyz-123" });
 
-  // Following copilot-instructions section 2: Post-verify redirects to localhost:4200
+  
   t.is(res.status, 302);
   t.truthy(res.headers.location);
   t.true(res.headers.location.includes("localhost:4200"));
@@ -152,7 +152,7 @@ test.serial("Server should handle invalid verification token", async (t) => {
 });
 
 test.serial("Server should handle missing verification token parameter", async (t) => {
-  // Following copilot-instructions section 2: Token required in query string
+  
   const res = await request(app)
     .get("/api/verify-email");
 
@@ -194,7 +194,7 @@ test.serial("Server should handle login with empty body", async (t) => {
 });
 
 test.serial("Server should handle login with wrong credentials", async (t) => {
-  // Following copilot-instructions section 5: Error strategy
+  
   const hashedPassword = await bcrypt.hash("correctpass", 10);
   
   await User.create({
@@ -216,7 +216,7 @@ test.serial("Server should handle login with wrong credentials", async (t) => {
   // Should return 400 or 401 for wrong credentials
   t.true(res.status === 400 || res.status === 401);
   
-  // Following copilot-instructions section 5: Controllers should not expose internal details
+  
   if (res.body && res.body.message) {
     const msg = res.body.message.toLowerCase();
     t.false(msg.includes("select"), "Should not expose SQL");
@@ -237,7 +237,7 @@ test.serial("Server should handle login with non-existent email", async (t) => {
 });
 
 test.serial("Database should handle query errors gracefully", async (t) => {
-  // Following copilot-instructions section 6: Postgres via sequelize
+  
   try {
     await sequelize.query("SELECT * FROM nonexistent_table_xyz");
     t.fail("Should have thrown an error");
@@ -248,7 +248,7 @@ test.serial("Database should handle query errors gracefully", async (t) => {
 });
 
 test.serial("Server should handle rapid successive requests", async (t) => {
-  // Following copilot-instructions section 1: Express + Sequelize app
+  
   const promises = [];
   
   for (let i = 0; i < 10; i++) {
@@ -274,7 +274,7 @@ test.serial("Server should handle HEAD requests", async (t) => {
 });
 
 test.serial("Server should have test route configured", async (t) => {
-  // Following copilot-instructions section 1: Entry is src/index.js
+  
   const res = await request(app)
     .get("/");
 
@@ -283,7 +283,7 @@ test.serial("Server should have test route configured", async (t) => {
 });
 
 test.serial("Server should have swagger docs configured", async (t) => {
-  // Following copilot-instructions section 6: Integration points
+  
   const res = await request(app)
     .get("/api-docs/");
 
@@ -292,7 +292,7 @@ test.serial("Server should have swagger docs configured", async (t) => {
 });
 
 test.serial("Server should handle successful user registration", async (t) => {
-  // Following copilot-instructions section 2: Registration flow
+  
   const res = await request(app)
     .post("/api/register")
     .send({
@@ -301,7 +301,7 @@ test.serial("Server should handle successful user registration", async (t) => {
       password: "password123",
     });
 
-  // Following copilot-instructions section 3: Email uses SMTP_* env vars
+  
   // Registration may succeed or fail (depending on email service availability)
   t.true(res.status === 200 || res.status === 201 || res.status >= 400);
   
@@ -311,7 +311,7 @@ test.serial("Server should handle successful user registration", async (t) => {
 });
 
 test.serial("Server should handle duplicate email registration", async (t) => {
-  // Following copilot-instructions section 2: Registration flow
+  
   const hashedPassword = await bcrypt.hash("password123", 10);
   
   await User.create({
@@ -335,8 +335,8 @@ test.serial("Server should handle duplicate email registration", async (t) => {
 });
 
 test.serial("Server should handle login attempt", async (t) => {
-  // Following copilot-instructions section 1: JWTs issued in src/utils/jwt.js
-  // Following copilot-instructions section 3: JWT_SECRET and JWT_EXPIRES_IN
+  
+  
   const hashedPassword = await bcrypt.hash("loginpass", 10);
   
   await User.create({
@@ -355,10 +355,10 @@ test.serial("Server should handle login attempt", async (t) => {
       password: "loginpass",
     });
 
-  // Following copilot-instructions section 5: Controllers map request -> service
+  
   // Login may succeed (200) or fail (400/401) depending on user enabled status
   if (res.status === 200) {
-    // Following copilot-instructions section 1: Mappers & DTOs shape API responses
+    
     // Response format determined by UserController and UserMapper
     t.truthy(res.body, "Should return response body");
     // Token field name varies by implementation - verify response exists
@@ -370,7 +370,7 @@ test.serial("Server should handle login attempt", async (t) => {
 });
 
 test.serial("Server should protect authenticated routes", async (t) => {
-  // Following copilot-instructions section 8: authMiddleware injects req.user
+  
   const res = await request(app)
     .get("/api/appointments/my-appointments");
 
@@ -379,7 +379,7 @@ test.serial("Server should protect authenticated routes", async (t) => {
 });
 
 test.serial("Server should handle concurrent database operations", async (t) => {
-  // Following copilot-instructions section 6: Postgres via sequelize
+  
   const promises = [];
   
   for (let i = 0; i < 5; i++) {
