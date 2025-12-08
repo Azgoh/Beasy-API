@@ -16,11 +16,6 @@ test.beforeEach(async () => {
   await Review.destroy({ where: {}, force: true, truncate: true, cascade: true });
   await Professional.destroy({ where: {}, force: true, truncate: true, cascade: true });
   await User.destroy({ where: {}, force: true, truncate: true, cascade: true });
-  
-  // Reset auto-increment sequences
-  await sequelize.query('ALTER SEQUENCE "Users_id_seq" RESTART WITH 1');
-  await sequelize.query('ALTER SEQUENCE "Professionals_id_seq" RESTART WITH 1');
-  await sequelize.query('ALTER SEQUENCE "Reviews_id_seq" RESTART WITH 1');
 });
 
 test.after.always(async () => {
