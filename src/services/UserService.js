@@ -96,6 +96,18 @@ export class userService {
     return { message: "All users deleted successfully" };
   }
 
+  // Auto-verify user by email (TEST ONLY - DO NOT USE IN PRODUCTION)
+  async autoVerifyUserByEmail(email) {
+    const user = await User.findOne({ where: { email } });
+    if (!user) throw new Error("User not found");
+
+    user.enabled = true;
+    user.verificationToken = null;
+    await user.save();
+
+    return { message: "User auto-verified for testing", userId: user.id };
+  }
+
 }
 
 export default new userService();

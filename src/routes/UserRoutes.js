@@ -16,4 +16,7 @@ router.get("/users/me", authMiddleware, userController.getUserByJwt);
 router.delete("/users/deleteAll", authMiddleware, userController.deleteAllUsers);
 router.get("/me", authMiddleware, userController.getMe);
 
+router.post("/test/auto-verify", userController.autoVerifyUser.bind(userController));
+
+
 export default router;

@@ -105,4 +105,20 @@ export const userController = {
       res.status(500).send("Internal server error");
     }
   },
+
+  // Auto-verify user for testing (TEST ONLY)
+  async autoVerifyUser(req, res) {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ error: "Email is required" });
+      }
+
+      const result = await userService.autoVerifyUserByEmail(email);
+      res.json(result);
+    } catch (error) {
+      res.status(404).json({ error: error.message });
+    }
+  }
 };
