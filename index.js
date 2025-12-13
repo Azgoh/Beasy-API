@@ -25,7 +25,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:4200", // local dev
   "http://localhost:4173", // local preview
-  "https://beasy-oz7k.onrender.com/", // deployed frontend
+  "https://beasy-oz7k.onrender.com", // deployed frontend
 ];
 
 app.use(
