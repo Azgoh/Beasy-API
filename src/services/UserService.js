@@ -28,7 +28,7 @@ export class userService {
       verificationToken: token,
     });
 
-    const confirmationUrl = `http://localhost:8080/api/verify-email?token=${token}`;
+    const confirmationUrl = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
     await emailService.sendEmail(email, "Email Verification", `Click this link to verify your email: ${confirmationUrl}`);
 
     return { message: "User registered successfully. Please verify your email." };
