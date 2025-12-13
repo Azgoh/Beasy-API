@@ -3,9 +3,9 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import bodyParser from "body-parser";
-import swaggerUi from 'swagger-ui-express';
-import { readFileSync } from 'fs';
-const swaggerDocument = JSON.parse(readFileSync('./docs/swagger.json', 'utf8'));
+import swaggerUi from "swagger-ui-express";
+import { readFileSync } from "fs";
+const swaggerDocument = JSON.parse(readFileSync("./docs/swagger.json", "utf8"));
 
 // Import route files
 import userRoutes from "./src/routes/UserRoutes.js";
@@ -22,7 +22,28 @@ dotenv.config();
 const app = express();
 
 // Middlewares
-app.use(cors({ origin: "http://localhost:4200" }));
+const allowedOrigins = [
+  "http://localhost:4200", // local dev
+  "http://localhost:4173", // local preview
+  "https://beasy-oz7k.onrender.com/", // deployed frontend
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true); // allow Postman / curl
+      if (allowedOrigins.indexOf(origin) === -1) {
+        return callback(
+          new Error(`CORS not allowed for origin ${origin}`),
+          false
+        );
+      }
+      return callback(null, true);
+    },
+    credentials: true,
+  })
+);
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -37,7 +58,7 @@ app.use("/api/availability", availabilityRoutes);
 app.use("/api/appointments", appointmentRoutes);
 
 // Add before routes
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Start server
 const PORT = process.env.PORT || 8080;
