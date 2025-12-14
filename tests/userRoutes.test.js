@@ -32,8 +32,8 @@ test.serial("POST /api/register should create a new user", async (t) => {
   const user = await User.findOne({ where: { email: "test@example.com" } });
   t.truthy(user);
   t.is(user.username, "testuser");
-  t.truthy(user.verificationToken);
-  t.false(user.enabled);
+  t.falsy(user.verificationToken);
+  t.truthy(user.enabled);
 });
 
 test.serial("POST /api/login should return a JWT token", async (t) => {
