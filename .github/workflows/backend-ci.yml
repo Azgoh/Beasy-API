@@ -35,3 +35,10 @@ jobs:
       - name: Run backend tests
         run: |
           npm test
+
+      - name: Deploy to Render
+        if: success()
+        uses: render-examples/github-deploy@v1
+        with:
+          apiKey: ${{ secrets.RENDER_API_KEY }}
+          serviceId: ${{ secrets.RENDER_SERVICE_ID }}
