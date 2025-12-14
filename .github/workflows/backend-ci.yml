@@ -30,10 +30,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd backend
+          cd Beasy-API
           npm install
 
       - name: Run backend tests
         run: |
-          cd backend
+          cd Beasy-API
           npm test
