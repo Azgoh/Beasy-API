@@ -10,7 +10,14 @@
     "dev:seed": "npm run seed && npm run dev",
     "start": "node index.js",
     "test": "NODE_ENV=test ava",
-    "coverage": "c8 --reporter=text --reporter=html npm test"
+    "coverage": "c8 --check-coverage --lines 80 --reporter=text --reporter=html npm test"
+  },
+  "c8": {
+    "exclude": [
+      "index.js",
+      "src/config/**",
+      "src/seed/**"
+    ]
   },
   "keywords": [],
   "author": "",
