@@ -1,8 +1,8 @@
 name: Backend CI
 
 on:
-  push:         
-  pull_request: 
+  push:
+  pull_request:
 
 jobs:
   test-backend:
@@ -11,7 +11,7 @@ jobs:
     env:
       NODE_ENV: test
       DB_DIALECT: sqlite
-      DB_STORAGE: ':memory:'
+      DB_STORAGE: ":memory:"
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       JWT_EXPIRES_IN: "1d"
       SMTP_HOST: smtp.gmail.com
@@ -26,7 +26,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Install dependencies
         run: |
