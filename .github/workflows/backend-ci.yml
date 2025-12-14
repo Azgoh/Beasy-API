@@ -1,3 +1,13 @@
+name: Backend CI
+
+on:
+  push:
+    paths:
+      - backend/**
+  pull_request:
+    paths:
+      - backend/**
+
 jobs:
   test-backend:
     runs-on: ubuntu-latest
@@ -7,7 +17,7 @@ jobs:
       DB_DIALECT: sqlite
       DB_STORAGE: ':memory:'
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
+      JWT_EXPIRES_IN: "1d"
       SMTP_HOST: smtp.gmail.com
       SMTP_PORT: 587
       SMTP_USER: ${{ secrets.SMTP_USER }}
