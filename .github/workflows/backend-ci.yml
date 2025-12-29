@@ -42,6 +42,12 @@ jobs:
           name: coverage-report
           path: coverage
 
+      - name: Start backend
+        run: |
+          npm install
+          npm run start &  
+          sleep 5           
+
       - name: Run k6 tests in Docker
         run: |
           docker run --rm -v ${{ github.workspace }}/k6:/scripts loadimpact/k6 run /scripts/load_login.js
