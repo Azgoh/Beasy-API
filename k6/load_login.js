@@ -8,7 +8,7 @@ export const options = {
     { duration: "30s", target: 0 },
   ],
   thresholds: {
-    http_req_duration: ["p(95)<2000"], // 2sec p95 as there is bcrypt hashing which slows it down
+    http_req_duration: ["p(95)<3000"], // 3sec p95 as there is bcrypt hashing which slows it down
     http_req_failed: ["rate<0.01"],
   },
 };

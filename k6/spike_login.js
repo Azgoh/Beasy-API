@@ -9,7 +9,7 @@ export const options = {
     { duration: "10s", target: 0 },
   ],
   thresholds: {
-    http_req_duration: ["p(95)<6000"], // relax p95 by 4 sec due to the vu spike
+    http_req_duration: ["p(95)<6000"], // relax p95 by 3 sec due to the vu spike
     http_req_failed: ["rate<0.01"],
   },
 };
