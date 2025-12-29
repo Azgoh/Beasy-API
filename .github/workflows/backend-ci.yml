@@ -51,8 +51,8 @@ jobs:
         run: |
           docker run --rm -v ${{ github.workspace }}/k6:/scripts loadimpact/k6 run /scripts/load_login.js
           docker run --rm -v ${{ github.workspace }}/k6:/scripts loadimpact/k6 run /scripts/spike_login.js
-          docker run --rm -v ${{ github.workspace }}/k6:/scripts loadimpact/k6 run /scripts/load_professional_me.js
-          docker run --rm -v ${{ github.workspace }}/k6:/scripts loadimpact/k6 run /scripts/spike_professional_me.js
+          docker run --rm -v ${{ github.workspace }}/k6:/scripts loadimpact/k6 run /scripts/load_professional_availability_me.js
+          docker run --rm -v ${{ github.workspace }}/k6:/scripts loadimpact/k6 run /scripts/spike_professional_availability_me.js
 
 
       - name: Deploy to Render
