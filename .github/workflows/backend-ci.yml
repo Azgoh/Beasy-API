@@ -45,11 +45,10 @@ jobs:
       - name: Start backend
         run: |
           npm run start &  
-          sleep 10           
+          sleep 30           
         
       - name: Install k6 via snap
         run: sudo snap install k6
-
 
       - name: Run k6 tests
         run: |
