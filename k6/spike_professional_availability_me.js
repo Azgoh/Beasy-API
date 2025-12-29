@@ -14,8 +14,6 @@ export const options = {
   },
 };
 
-const BASE_URL = 'http://host.docker.internal:8080';
-
 export function setup() {
   const payload = JSON.stringify({
     username: "alice_miller",
@@ -24,7 +22,7 @@ export function setup() {
 
   const params = { headers: { "Content-Type": "application/json" } };
 
-  const res = http.post(`${BASE_URL}/api/login`, payload, params);
+  const res = http.post("http://localhost:8080/api/login", payload, params);
 
   check(res, { "login succeeded": (r) => r.status === 200 });
 
@@ -39,7 +37,7 @@ export default function (data) {
   };
 
   const res = http.get(
-    `${BASE_URL}/api/availability/professional/me`,
+    "http://localhost:8080/api/availability/professional/me",
     params
   );
 
