@@ -42,6 +42,13 @@ jobs:
           name: coverage-report
           path: coverage
 
+      - name: Run k6 performance tests
+        run: |
+          k6 run ./k6/load_login.js
+          k6 run ./k6/spike_login.js
+          k6 run ./k6/load_professional_availability_me.js
+          k6 run ./k6/spike_professional_availability_me.js
+
       - name: Deploy to Render
         if: success()
         run: |
