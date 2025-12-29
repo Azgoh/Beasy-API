@@ -48,10 +48,10 @@ export default async function runSeed(models) {
     // Users
     const users = [
       { username: "admin", email: "admin@example.com", password: "$2a$12$pCZbFA6MDLy2PL4EaQqih.hvdGM/wZ1Gue/fjhU.B2n24sxuW04ze", role: "USER", enabled: true, verificationToken: null, authProvider: "LOCAL" },
-      { username: "john_doe", email: "john@example.com", password: "$2a$12$rgWiAVLqohu2E2jNOLCRe.JXvku3DC0VznCWYS1R9lCt2F0pSpR0C", role: "USER", enabled: true, verificationToken: null, authProvider: "LOCAL" },
-      { username: "jane_smith", email: "jane@example.com", password: "$2a$12$rgWiAVLqohu2E2jNOLCRe.JXvku3DC0VznCWYS1R9lCt2F0pSpR0C", role: "USER", enabled: true, verificationToken: null, authProvider: "LOCAL" },
-      { username: "alice_miller", email: "alice@example.com", password: "$2a$12$rgWiAVLqohu2E2jNOLCRe.JXvku3DC0VznCWYS1R9lCt2F0pSpR0C", role: "PROFESSIONAL", enabled: true, verificationToken: null, authProvider: "LOCAL" },
-      { username: "bob_jones", email: "bob@example.com", password: "$2a$12$rgWiAVLqohu2E2jNOLCRe.JXvku3DC0VznCWYS1R9lCt2F0pSpR0C", role: "PROFESSIONAL", enabled: true, verificationToken: null, authProvider: "LOCAL" },
+      { username: "john_doe", email: "john@example.com", password: "$2a$12$F3Ox2O9W.OF/T0JQwORRwuhohfyQC.oqWnQ3Ani8fvGW1L2i9xWbm", role: "USER", enabled: true, verificationToken: null, authProvider: "LOCAL" },
+      { username: "jane_smith", email: "jane@example.com", password: "$2a$12$F3Ox2O9W.OF/T0JQwORRwuhohfyQC.oqWnQ3Ani8fvGW1L2i9xWbm", role: "USER", enabled: true, verificationToken: null, authProvider: "LOCAL" },
+      { username: "alice_miller", email: "alice@example.com", password: "$2a$12$F3Ox2O9W.OF/T0JQwORRwuhohfyQC.oqWnQ3Ani8fvGW1L2i9xWbm", role: "PROFESSIONAL", enabled: true, verificationToken: null, authProvider: "LOCAL" },
+      { username: "bob_jones", email: "bob@example.com", password: "$2a$12$F3Ox2O9W.OF/T0JQwORRwuhohfyQC.oqWnQ3Ani8fvGW1L2i9xWbm", role: "PROFESSIONAL", enabled: true, verificationToken: null, authProvider: "LOCAL" },
     ];
 
     const createdUsers = {};
@@ -158,10 +158,10 @@ export default async function runSeed(models) {
       const aliceId = Object.values(createdProfs)[0]?.id;
       const bobId = Object.values(createdProfs)[1]?.id;
       const appts = [
-        { userId: createdUsers["john_doe"].id, professionalId: aliceId, date: "2025-11-25", startTime: "07:00:00", endTime: "08:30:00", appointmentStatus: 0 },
-        { userId: createdUsers["jane_smith"].id, professionalId: bobId, date: "2025-11-26", startTime: "17:00:00", endTime: "18:00:00", appointmentStatus: 2 },
-        { userId: createdUsers["john_doe"].id, professionalId: bobId, date: "2025-11-25", startTime: "06:00:00", endTime: "07:00:00", appointmentStatus: 0 },
-        { userId: createdUsers["jane_smith"].id, professionalId: aliceId, date: "2025-11-26", startTime: "18:00:00", endTime: "19:00:00", appointmentStatus: 0 },
+        { userId: createdUsers["john_doe"].id, professionalId: aliceId, date: "2026-01-07", startTime: "07:00:00", endTime: "08:30:00", appointmentStatus: 0 },
+        { userId: createdUsers["jane_smith"].id, professionalId: bobId, date: "2026-01-07", startTime: "17:00:00", endTime: "18:00:00", appointmentStatus: 2 },
+        { userId: createdUsers["john_doe"].id, professionalId: bobId, date: "2026-01-09", startTime: "06:00:00", endTime: "07:00:00", appointmentStatus: 0 },
+        { userId: createdUsers["jane_smith"].id, professionalId: aliceId, date: "2025-01-09", startTime: "18:00:00", endTime: "19:00:00", appointmentStatus: 0 },
       ];
 
       // map numeric codes to enum labels used by the Appointment model
@@ -203,15 +203,15 @@ export default async function runSeed(models) {
       const aliceProf = Object.values(createdProfs)[0];
       const bobProf = Object.values(createdProfs)[1];
       const avails = [
-        { title: "Morning Slot", date: "2025-12-18", startTime: "09:00:00", endTime: "12:00:00", userId: createdUsers["alice_miller"].id, professionalId: aliceProf?.id },
-        { title: "Afternoon Slot", date: "2025-12-18", startTime: "13:00:00", endTime: "17:00:00", userId: createdUsers["alice_miller"].id, professionalId: aliceProf?.id },
-        { title: "Morning Slot", date: "2025-12-19", startTime: "09:00:00", endTime: "12:00:00", userId: createdUsers["alice_miller"].id, professionalId: aliceProf?.id },
-        { title: "Afternoon Slot", date: "2025-12-19", startTime: "13:00:00", endTime: "17:00:00", userId: createdUsers["alice_miller"].id, professionalId: aliceProf?.id },
+        { title: "Morning Slot", date: "2026-01-06", startTime: "09:00:00", endTime: "12:00:00", userId: createdUsers["alice_miller"].id, professionalId: aliceProf?.id },
+        { title: "Afternoon Slot", date: "2025-01-06", startTime: "13:00:00", endTime: "17:00:00", userId: createdUsers["alice_miller"].id, professionalId: aliceProf?.id },
+        { title: "Morning Slot", date: "2025-01-07", startTime: "09:00:00", endTime: "12:00:00", userId: createdUsers["alice_miller"].id, professionalId: aliceProf?.id },
+        { title: "Afternoon Slot", date: "2025-01-07", startTime: "13:00:00", endTime: "17:00:00", userId: createdUsers["alice_miller"].id, professionalId: aliceProf?.id },
 
-        { title: "Morning Slot", date: "2025-12-18", startTime: "08:00:00", endTime: "11:00:00", userId: createdUsers["bob_jones"].id, professionalId: bobProf?.id },
-        { title: "Afternoon Slot", date: "2025-12-18", startTime: "12:00:00", endTime: "16:00:00", userId: createdUsers["bob_jones"].id, professionalId: bobProf?.id },
-        { title: "Morning Slot", date: "2025-12-19", startTime: "08:00:00", endTime: "11:00:00", userId: createdUsers["bob_jones"].id, professionalId: bobProf?.id },
-        { title: "Afternoon Slot", date: "2025-12-19", startTime: "12:00:00", endTime: "16:00:00", userId: createdUsers["bob_jones"].id, professionalId: bobProf?.id },
+        { title: "Morning Slot", date: "2026-01-06", startTime: "08:00:00", endTime: "11:00:00", userId: createdUsers["bob_jones"].id, professionalId: bobProf?.id },
+        { title: "Afternoon Slot", date: "2026-01-06", startTime: "12:00:00", endTime: "16:00:00", userId: createdUsers["bob_jones"].id, professionalId: bobProf?.id },
+        { title: "Morning Slot", date: "2026-01-07", startTime: "08:00:00", endTime: "11:00:00", userId: createdUsers["bob_jones"].id, professionalId: bobProf?.id },
+        { title: "Afternoon Slot", date: "2026-01-07", startTime: "12:00:00", endTime: "16:00:00", userId: createdUsers["bob_jones"].id, professionalId: bobProf?.id },
       ];
 
       for (const a of avails) {
