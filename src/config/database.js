@@ -7,7 +7,7 @@ dotenv.config({
 
 let sequelize;
 
-if (process.env.NODE_ENV === "test") {
+if (process.env.NODE_ENV === "test" || process.env.NODE_ENV === "ci") {
   // SQLite για tests
   sequelize = new Sequelize({
     dialect: process.env.DB_DIALECT,
