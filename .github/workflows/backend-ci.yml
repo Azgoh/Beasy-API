@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      NODE_ENV: test
+      NODE_ENV: production
       DB_DIALECT: sqlite
       DB_STORAGE: ":memory:"
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
@@ -45,7 +45,7 @@ jobs:
       - name: Start backend
         run: |
           npm run start &  
-          sleep 30           
+          sleep 10         
         
       - name: Install k6 via snap
         run: sudo snap install k6
