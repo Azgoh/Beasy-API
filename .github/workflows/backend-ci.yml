@@ -44,7 +44,6 @@ jobs:
 
       - name: Start backend
         run: |
-          npm install
           npm run start &  
           sleep 5           
 
