@@ -1,5 +1,3 @@
-import moment from "moment";
-
 function mapAttrs(model, candidate) {
   if (!model || !model.rawAttributes) return candidate;
   const res = {};

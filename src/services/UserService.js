@@ -1,10 +1,7 @@
-import { User, Professional } from "../models/index.js";
+import { User } from "../models/index.js";
 import bcrypt from "bcryptjs";
-import { generateToken, verifyToken } from "../utils/jwt.js";
-import { v4 as uuidv4 } from "uuid";
-import emailService from "./EmailService.js"; 
+import { generateToken } from "../utils/jwt.js";
 import { Op } from "sequelize";
-import { mapUserDto } from "../mappers/UserMapper.js";
 
 export class userService {
 
@@ -16,9 +13,7 @@ export class userService {
     const existingEmail = await User.findOne({ where: { email } });
     if (existingEmail) throw new Error("Email already registered");
 
-    const token = uuidv4();
-
-    const newUser = await User.create({
+    const _newUser = await User.create({
       username,
       email,
       password: await bcrypt.hash(password, 10),

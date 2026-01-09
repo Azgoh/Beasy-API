@@ -43,7 +43,7 @@ export const professionalController = {
   },
 
   // GET /api/professionals
-  async getAllProfessionals(req, res) {
+  async getAllProfessionals(_req, res) {
     try {
       // detect association aliases if defined
       const profAssocKeys = Professional.associations ? Object.keys(Professional.associations) : [];

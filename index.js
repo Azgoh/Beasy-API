@@ -48,7 +48,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Test route
-app.get("/", (req, res) => res.send("API is running"));
+// app.get("/", (req, res) => res.send("API is running"));
 
 // Routes
 app.use("/api", userRoutes);
