@@ -13,7 +13,7 @@ export class userService {
     const existingEmail = await User.findOne({ where: { email } });
     if (existingEmail) throw new Error("Email already registered");
 
-    const _newUser = await User.create({
+    await User.create({
       username,
       email,
       password: await bcrypt.hash(password, 10),
