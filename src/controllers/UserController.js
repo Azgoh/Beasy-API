@@ -42,7 +42,7 @@ export const userController = {
   },
 
   // GET /api/users
-  async getAllUsers(res) {
+  async getAllUsers(_req, res) {
     try {
       const users = await userService.getAllUsers();
       const dtos = users.map(user => mapUserDto(user));
@@ -84,7 +84,7 @@ export const userController = {
   },
 
   // DELETE /api/users/deleteAll
-  async deleteAllUsers(res) {
+  async deleteAllUsers(_req, res) {
     try {
       await userService.deleteAllUsers();
       res.send("All users deleted successfully");
