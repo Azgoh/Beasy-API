@@ -1,8 +1,6 @@
-import dotenv from "dotenv";
 import { verifyToken } from "../utils/jwt.js";
 import userService from "../services/UserService.js";
 
-dotenv.config();
 
 //Authenticate
 export const authMiddleware = async (req, res, next) => {

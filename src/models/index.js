@@ -1,4 +1,3 @@
-// src/models/index.js
 import { sequelize } from "../config/database.js"; // your Sequelize instance
 import { User } from "./User.js";
 import { Professional } from "./Professional.js";
